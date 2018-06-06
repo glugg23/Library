@@ -1,3 +1,5 @@
+import org.apache.commons.codec.digest.Crypt;
+
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +35,8 @@ public class Main {
             String username = in.next();
             System.out.print("Enter you password: ");
             String password = in.next();
+            /*String hashedPassword = Crypt.crypt(password);
+            System.out.println(hashedPassword);*/
 
             user = new User(username, password);
 
@@ -54,10 +58,11 @@ public class Main {
 
                         if(input == 'y') {
                             query = "INSERT INTO users (username, password) " +
-                                    "VALUES ('" + username + "','" + password + "');";
+                                    "VALUES ('" + username + "','" + Crypt.crypt(password) + "');";
                             statement.execute(query);
                             user.toggleLoggedIn();
-                            System.out.println("You have successfully logged in.");
+                            System.out.println("You have successfully logged in.\n");
+                            resultSet.close();
                             break;
                         }
 
@@ -66,9 +71,10 @@ public class Main {
                 } else {
                     //Otherwise check to see if password matches
                     while(resultSet.next()) {
-                        if(user.getPassword().equals(resultSet.getString("password"))) {
+                        if(resultSet.getString("password").equals(Crypt.crypt(password, resultSet.getString("password")))) {
                             user.toggleLoggedIn();
-                            System.out.println("You have successfully logged in.");
+                            System.out.println("You have successfully logged in.\n");
+                            resultSet.close();
                             break;
                         }
                     }
