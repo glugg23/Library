@@ -18,6 +18,7 @@ public class Main {
 
         } catch(Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
 
         try {
@@ -25,6 +26,7 @@ public class Main {
 
         } catch(Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
 
         User user;
@@ -87,6 +89,7 @@ public class Main {
 
             } catch(Exception e) {
                 e.printStackTrace();
+                System.exit(1);
             }
 
         } while(!user.isLoggedIn());
