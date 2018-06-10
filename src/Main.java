@@ -40,7 +40,7 @@ public class Main {
             /*String hashedPassword = Crypt.crypt(password);
             System.out.println(hashedPassword);*/
 
-            user = new User(username, password);
+            user = new User(username, Crypt.crypt(password));
 
             //Find all users that match this username
             String query = "SELECT * FROM users " +
@@ -93,5 +93,10 @@ public class Main {
             }
 
         } while(!user.isLoggedIn());
+
+        //Pass scanner in to avoid creating a new one
+        Menu.basicMenu(user, connection, in);
+
+        in.close();
     }
 }
