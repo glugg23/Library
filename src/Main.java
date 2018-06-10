@@ -74,6 +74,24 @@ public class Main {
                     //Otherwise check to see if password matches
                     while(resultSet.next()) {
                         if(resultSet.getString("password").equals(Crypt.crypt(password, resultSet.getString("password")))) {
+                            //If there is a borrowed book get data for that book
+                            if(resultSet.getInt("book") != 0) {
+                                query = "SELECT * FROM books " +
+                                        "WHERE id=" + resultSet.getInt("book") + ';';
+
+                                ResultSet rs = statement.executeQuery(query);
+                                rs.next();
+
+                                Book book = new Book(rs.getString("title"),
+                                        rs.getString("author"),
+                                        rs.getString("genre"),
+                                        true,
+                                        rs.getInt("borrowedBy"),
+                                        rs.getTimestamp("returnDate").toInstant());
+
+                                user.setBorrowedBook(book);
+                            }
+
                             user.toggleLoggedIn();
                             System.out.println("You have successfully logged in.\n");
                             resultSet.close();

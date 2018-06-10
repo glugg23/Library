@@ -4,6 +4,7 @@ public class User {
     private String username;
     private String password;
     private boolean loggedIn = false;
+    private Book book = null;
 
     public User(String username, String password) {
         this.username = username;
@@ -16,6 +17,14 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setBorrowedBook(Book book) {
+        this.book = book;
+    }
+
+    public Book getBook() {
+        return book;
     }
 
     public boolean isLoggedIn() {
