@@ -34,9 +34,9 @@ public class Main {
 
         do {
             System.out.print("Enter your username: ");
-            String username = in.next();
+            String username = in.nextLine();
             System.out.print("Enter you password: ");
-            String password = in.next();
+            String password = in.nextLine();
             /*String hashedPassword = Crypt.crypt(password);
             System.out.println(hashedPassword);*/
 
@@ -68,6 +68,7 @@ public class Main {
                             break;
                         }
 
+                        in.nextLine();
                     } while(input != 'n');
 
                 } else {
