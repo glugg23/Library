@@ -43,8 +43,8 @@ public class Main {
             user = new User(username, Crypt.crypt(password));
 
             //Find all users that match this username
-            String query = "SELECT * FROM users " +
-                           "WHERE username='" + username + "';";
+            String query = String.format("SELECT * FROM users WHERE username='%s';", user.getUsername());
+
             try {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(query);
@@ -59,8 +59,8 @@ public class Main {
                         input = in.next().charAt(0);
 
                         if(input == 'y') {
-                            query = "INSERT INTO users (username, password) " +
-                                    "VALUES ('" + username + "','" + Crypt.crypt(password) + "');";
+                            query = String.format("INSERT INTO users(username, password) VALUES('%s', '%s');", user.getUsername(), user.getPassword());
+
                             statement.execute(query);
                             user.toggleLoggedIn();
                             System.out.println("You have successfully logged in.\n");
@@ -76,8 +76,7 @@ public class Main {
                         if(resultSet.getString("password").equals(Crypt.crypt(password, resultSet.getString("password")))) {
                             //If there is a borrowed book get data for that book
                             if(resultSet.getInt("book") != 0) {
-                                query = "SELECT * FROM books " +
-                                        "WHERE id=" + resultSet.getInt("book") + ';';
+                                query = String.format("SELECT * FROM books WHERE id=%d;", resultSet.getInt("book"));
 
                                 ResultSet rs = statement.executeQuery(query);
                                 rs.next();

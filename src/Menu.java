@@ -83,13 +83,9 @@ class Menu {
 
                 switch(choice) {
                     case 1:
-                        String queryBooks = "UPDATE books " +
-                                            "SET isBorrowed=0, borrowedBy=null, returnDate=null " +
-                                            "WHERE title='" + user.getBook().getTitle() + "';";
+                        String queryBooks = String.format("UPDATE books SET isBorrowed=0, borrowedBy=null, returnDate=null WHERE title='%s';", user.getBook().getTitle());
 
-                        String queryUsers = "UPDATE users " +
-                                            "SET book=null " +
-                                            "WHERE username='" + user.getUsername() + "';";
+                        String queryUsers = String.format("UPDATE users SET book=null WHERE username='%s';", user.getUsername());
 
                         try {
                             Statement statement = connection.createStatement();
