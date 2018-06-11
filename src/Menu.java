@@ -37,7 +37,7 @@ class Menu {
 
             switch(choice) {
                 case 1:
-                    System.out.println("Loan Menu");
+                    loanMenu(user, connection, in);
                     menuOpenedAgain = true;
                     break;
                 case 2:
@@ -56,6 +56,76 @@ class Menu {
                     //Clear input buffer as this will trigger when the user enters invalid input
                     in.nextLine();
                     menuOpenedAgain = true;
+                    break;
+            }
+
+        } while(choice != 0);
+    }
+
+    static private void loanMenu(User user, Connection connection, Scanner in) {
+        System.out.println("Loan Menu\n" +
+                "\t1 - Enter a book to take out\n" +
+                "\t0 - Go back to main menu\n");
+
+        int choice;
+
+        do {
+            System.out.print(user.getUsername() + ": ");
+            try {
+                choice = in.nextInt();
+
+            } catch(InputMismatchException e) {
+                //If the user enters something wrong set choice to a still valid number
+                choice = -1;
+            }
+
+            switch(choice) {
+                case 1:
+                    System.out.println("1 - Enter title of book\n" +
+                                       "2 - Enter id of book\n");
+                    System.out.print(user.getUsername() + ": ");
+
+                    int nestedChoice = 0;
+
+                    try {
+                        nestedChoice = in.nextInt();
+
+                    } catch(InputMismatchException e) {
+                        System.out.println("Invalid option.");
+                        //Clear input buffer as this will trigger when the user enters invalid input
+                        in.nextLine();
+                    }
+
+                    if(nestedChoice == 1) {
+                        System.out.print("Enter title: ");
+                        String title = in.nextLine();
+
+                        //TODO Add SQL logic here
+
+                    } else if(nestedChoice == 2) {
+                        System.out.print("Enter id: ");
+                        int id;
+                        try {
+                            id = in.nextInt();
+
+                        } catch(InputMismatchException e) {
+                            System.out.println("Invalid input.");
+                            //Clear input buffer as this will trigger when the user enters invalid input
+                            in.nextLine();
+                        }
+
+                        //TODO Add SQL logic here
+                    }
+
+                    //TODO Add some sort of success message
+                    return;
+
+                case 0:
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+                    //Clear input buffer as this will trigger when the user enters invalid input
+                    in.nextLine();
                     break;
             }
 

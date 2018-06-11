@@ -43,6 +43,7 @@ public class Main {
             user = new User(username, Crypt.crypt(password));
 
             //Find all users that match this username
+            //TODO Check that you cannot get an SQL injection from this
             String query = String.format("SELECT * FROM users WHERE username='%s';", user.getUsername());
 
             try {
