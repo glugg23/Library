@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Book {
+    private int id;
     private String title;
     private String author;
     private String genre;
@@ -12,22 +13,28 @@ public class Book {
     private int borrowedBy;
     private Instant returnDate;
 
-    public Book(String title, String author, String genre) {
+    public Book(int id, String title, String author, String genre) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.genre = genre;
     }
 
-    public Book(String title, String author, String genre, boolean borrowed, int id, Instant returnDate) {
+    public Book(int bookID, String title, String author, String genre, boolean borrowed, int userID, Instant returnDate) {
+        this.id = bookID;
         this.title = title;
         this.author = author;
         this.genre = genre;
 
         if(borrowed) {
             this.isBorrowed = true;
-            this.borrowedBy = id;
+            this.borrowedBy = userID;
             this.returnDate = returnDate;
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {

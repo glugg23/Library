@@ -29,7 +29,7 @@ public class Main {
             System.exit(1);
         }
 
-        User user;
+        User user = null;
         Scanner in = new Scanner(System.in);
 
         do {
@@ -40,11 +40,9 @@ public class Main {
             /*String hashedPassword = Crypt.crypt(password);
             System.out.println(hashedPassword);*/
 
-            user = new User(username, Crypt.crypt(password));
-
             //Find all users that match this username
             //TODO Check that you cannot get an SQL injection from this
-            String query = String.format("SELECT * FROM users WHERE username='%s';", user.getUsername());
+            String query = String.format("SELECT * FROM users WHERE username='%s';", username);
 
             try {
                 Statement statement = connection.createStatement();
@@ -60,11 +58,19 @@ public class Main {
                         input = in.next().charAt(0);
 
                         if(input == 'y') {
-                            query = String.format("INSERT INTO users(username, password) VALUES('%s', '%s');", user.getUsername(), user.getPassword());
+                            query = String.format("INSERT INTO users(username, password) VALUES('%s', '%s');", username, Crypt.crypt(password));
 
                             statement.execute(query);
+
+                            query = String.format("SELECT * FROM users WHERE username='%s';", username);
+                            ResultSet rs = statement.executeQuery(query);
+                            rs.next();
+
+                            user = new User(rs.getInt("id"), username, Crypt.crypt(password));
+
                             user.toggleLoggedIn();
                             System.out.println("You have successfully logged in.\n");
+                            rs.close();
                             resultSet.close();
                             break;
                         }
@@ -76,6 +82,9 @@ public class Main {
                     //Otherwise check to see if password matches
                     while(resultSet.next()) {
                         if(resultSet.getString("password").equals(Crypt.crypt(password, resultSet.getString("password")))) {
+
+                            user = new User(resultSet.getInt("id"), username, Crypt.crypt(password));
+
                             //If there is a borrowed book get data for that book
                             if(resultSet.getInt("book") != 0) {
                                 query = String.format("SELECT * FROM books WHERE id=%d;", resultSet.getInt("book"));
@@ -83,7 +92,8 @@ public class Main {
                                 ResultSet rs = statement.executeQuery(query);
                                 rs.next();
 
-                                Book book = new Book(rs.getString("title"),
+                                Book book = new Book(rs.getInt("id"),
+                                        rs.getString("title"),
                                         rs.getString("author"),
                                         rs.getString("genre"),
                                         true,
@@ -100,7 +110,7 @@ public class Main {
                         }
                     }
                     //If no results match the given password
-                    if(!user.isLoggedIn()) {
+                    if(user == null || !user.isLoggedIn()) {
                         System.out.println("Wrong username or password.\n");
                         resultSet.close();
                     }
@@ -111,7 +121,7 @@ public class Main {
                 System.exit(1);
             }
 
-        } while(!user.isLoggedIn());
+        } while(user == null || !user.isLoggedIn());
 
         //Pass scanner in to avoid creating a new one
         Menu.basicMenu(user, connection, in);
