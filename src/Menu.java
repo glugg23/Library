@@ -1,5 +1,9 @@
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -96,11 +100,56 @@ class Menu {
                         in.nextLine();
                     }
 
+                    //Clear input
+                    in.nextLine();
+
                     if(nestedChoice == 1) {
                         System.out.print("Enter title: ");
                         String title = in.nextLine();
 
-                        //TODO Add SQL logic here
+                        String query = String.format("SELECT * FROM books WHERE title='%s';", title);
+
+                        //Need to find date here so that it remains in scope longer
+                        Instant date = Instant.now().plus(1, ChronoUnit.WEEKS);
+
+                        try {
+                            Statement statement = connection.createStatement();
+
+                            //Find id of chosen book
+                            ResultSet rs = statement.executeQuery(query);
+                            rs.next();
+
+                            Book book = new Book(
+                                    rs.getInt("id"),
+                                    rs.getString("title"),
+                                    rs.getString("author"),
+                                    rs.getString("genre"),
+                                    true,
+                                    user.getId(),
+                                    date
+                            );
+
+                            //Set user object to have borrowed this book
+                            user.setBorrowedBook(book);
+
+                        } catch(Exception e) {
+                            System.out.println("There was an error, please try again.");
+                            e.printStackTrace();
+                        }
+
+                        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE title='%s';", user.getId(), Timestamp.from(date), title);
+                        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", user.getBook().getId(), user.getUsername());
+
+                        try {
+                            //Then update the database
+                            Statement statement = connection.createStatement();
+                            statement.execute(queryBooks);
+                            statement.execute(queryUsers);
+
+                        } catch(Exception e) {
+                            System.out.println("There was an error, please try again.");
+                            e.printStackTrace();
+                        }
 
                     } else if(nestedChoice == 2) {
                         System.out.print("Enter id: ");
