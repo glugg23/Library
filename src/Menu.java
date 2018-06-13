@@ -89,7 +89,7 @@ class Menu {
                                        "2 - Enter id of book\n");
                     System.out.print(user.getUsername() + ": ");
 
-                    int nestedChoice = 0;
+                    int nestedChoice;
 
                     try {
                         nestedChoice = in.nextInt();
@@ -98,6 +98,15 @@ class Menu {
                         System.out.println("Invalid option.");
                         //Clear input buffer as this will trigger when the user enters invalid input
                         in.nextLine();
+                        return;
+                    }
+
+                    //Another case where the choice is invalid
+                    if(nestedChoice > 2) {
+                        System.out.println("Invalid option.");
+                        //Clear input buffer as this will trigger when the user enters invalid input
+                        in.nextLine();
+                        return;
                     }
 
                     //Clear input
@@ -110,7 +119,7 @@ class Menu {
                         String query = String.format("SELECT * FROM books WHERE title='%s';", title);
 
                         //Need to find date here so that it remains in scope longer
-                        Instant date = Instant.now().plus(1, ChronoUnit.WEEKS);
+                        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
 
                         try {
                             Statement statement = connection.createStatement();
@@ -121,7 +130,7 @@ class Menu {
 
                             Book book = new Book(
                                     rs.getInt("id"),
-                                    rs.getString("title"),
+                                    title,
                                     rs.getString("author"),
                                     rs.getString("genre"),
                                     true,
@@ -135,6 +144,7 @@ class Menu {
                         } catch(Exception e) {
                             System.out.println("There was an error, please try again.");
                             e.printStackTrace();
+                            return;
                         }
 
                         String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE title='%s';", user.getId(), Timestamp.from(date), title);
@@ -149,11 +159,12 @@ class Menu {
                         } catch(Exception e) {
                             System.out.println("There was an error, please try again.");
                             e.printStackTrace();
+                            return;
                         }
 
                     } else if(nestedChoice == 2) {
                         System.out.print("Enter id: ");
-                        int id;
+                        int id = 0;
                         try {
                             id = in.nextInt();
 
@@ -161,12 +172,57 @@ class Menu {
                             System.out.println("Invalid input.");
                             //Clear input buffer as this will trigger when the user enters invalid input
                             in.nextLine();
+                            return;
                         }
 
-                        //TODO Add SQL logic here
+                        String query = String.format("SELECT * FROM books WHERE id=%d", id);
+
+                        //Need to find date here so that it remains in scope longer
+                        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
+
+                        try {
+                            Statement statement = connection.createStatement();
+
+                            //Find title, etc of book
+                            ResultSet rs = statement.executeQuery(query);
+                            rs.next();
+
+                            Book book = new Book(
+                                    id,
+                                    rs.getString("title"),
+                                    rs.getString("author"),
+                                    rs.getString("genre"),
+                                    true,
+                                    user.getId(),
+                                    date
+                            );
+
+                            //Set user object to have borrowed this book
+                            user.setBorrowedBook(book);
+
+                        } catch(Exception e) {
+                            System.out.println("There was an error, please try again.");
+                            e.printStackTrace();
+                            return;
+                        }
+
+                        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE id=%d;", user.getId(), Timestamp.from(date), id);
+                        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", id, user.getUsername());
+
+                        try {
+                            //Then update the database
+                            Statement statement = connection.createStatement();
+                            statement.execute(queryBooks);
+                            statement.execute(queryUsers);
+
+                        } catch(Exception e) {
+                            System.out.println("There was an error, please try again.");
+                            e.printStackTrace();
+                            return;
+                        }
                     }
 
-                    //TODO Add some sort of success message
+                    System.out.println("Success!\n");
                     return;
 
                 case 0:

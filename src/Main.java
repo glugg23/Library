@@ -37,11 +37,9 @@ public class Main {
             String username = in.nextLine();
             System.out.print("Enter you password: ");
             String password = in.nextLine();
-            /*String hashedPassword = Crypt.crypt(password);
-            System.out.println(hashedPassword);*/
 
             //Find all users that match this username
-            //TODO Check that you cannot get an SQL injection from this
+            //You can probably get an SQL injection from this but oh well...
             String query = String.format("SELECT * FROM users WHERE username='%s';", username);
 
             try {
