@@ -113,113 +113,10 @@ class Menu {
                     in.nextLine();
 
                     if(nestedChoice == 1) {
-                        System.out.print("Enter title: ");
-                        String title = in.nextLine();
-
-                        String query = String.format("SELECT * FROM books WHERE title='%s';", title);
-
-                        //Need to find date here so that it remains in scope longer
-                        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
-
-                        try {
-                            Statement statement = connection.createStatement();
-
-                            //Find id of chosen book
-                            ResultSet rs = statement.executeQuery(query);
-                            rs.next();
-
-                            Book book = new Book(
-                                    rs.getInt("id"),
-                                    title,
-                                    rs.getString("author"),
-                                    rs.getString("genre"),
-                                    true,
-                                    user.getId(),
-                                    date
-                            );
-
-                            //Set user object to have borrowed this book
-                            user.setBorrowedBook(book);
-
-                        } catch(Exception e) {
-                            System.out.println("There was an error, please try again.");
-                            e.printStackTrace();
-                            return;
-                        }
-
-                        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE title='%s';", user.getId(), Timestamp.from(date), title);
-                        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", user.getBook().getId(), user.getUsername());
-
-                        try {
-                            //Then update the database
-                            Statement statement = connection.createStatement();
-                            statement.execute(queryBooks);
-                            statement.execute(queryUsers);
-
-                        } catch(Exception e) {
-                            System.out.println("There was an error, please try again.");
-                            e.printStackTrace();
-                            return;
-                        }
+                        titleBorrow(user, connection, in);
 
                     } else if(nestedChoice == 2) {
-                        System.out.print("Enter id: ");
-                        int id = 0;
-                        try {
-                            id = in.nextInt();
-
-                        } catch(InputMismatchException e) {
-                            System.out.println("Invalid input.");
-                            //Clear input buffer as this will trigger when the user enters invalid input
-                            in.nextLine();
-                            return;
-                        }
-
-                        String query = String.format("SELECT * FROM books WHERE id=%d", id);
-
-                        //Need to find date here so that it remains in scope longer
-                        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
-
-                        try {
-                            Statement statement = connection.createStatement();
-
-                            //Find title, etc of book
-                            ResultSet rs = statement.executeQuery(query);
-                            rs.next();
-
-                            Book book = new Book(
-                                    id,
-                                    rs.getString("title"),
-                                    rs.getString("author"),
-                                    rs.getString("genre"),
-                                    true,
-                                    user.getId(),
-                                    date
-                            );
-
-                            //Set user object to have borrowed this book
-                            user.setBorrowedBook(book);
-
-                        } catch(Exception e) {
-                            System.out.println("There was an error, please try again.");
-                            e.printStackTrace();
-                            return;
-                        }
-
-                        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE id=%d;", user.getId(), Timestamp.from(date), id);
-                        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", id, user.getUsername());
-
-                        try {
-                            //Then update the database
-                            Statement statement = connection.createStatement();
-                            statement.execute(queryBooks);
-                            statement.execute(queryUsers);
-
-                        } catch(Exception e) {
-                            System.out.println("There was an error, please try again.");
-                            e.printStackTrace();
-                            return;
-                        }
+                        idBorrow(user, connection, in);
                     }
 
                     System.out.println("Success!\n");
@@ -235,6 +132,115 @@ class Menu {
             }
 
         } while(choice != 0);
+    }
+
+    static private void titleBorrow(User user, Connection connection, Scanner in) {
+        System.out.print("Enter title: ");
+        String title = in.nextLine();
+
+        String query = String.format("SELECT * FROM books WHERE title='%s';", title);
+
+        //Need to find date here so that it remains in scope longer
+        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
+
+        try {
+            Statement statement = connection.createStatement();
+
+            //Find id of chosen book
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+
+            Book book = new Book(
+                    rs.getInt("id"),
+                    title,
+                    rs.getString("author"),
+                    rs.getString("genre"),
+                    true,
+                    user.getId(),
+                    date
+            );
+
+            //Set user object to have borrowed this book
+            user.setBorrowedBook(book);
+
+        } catch(Exception e) {
+            System.out.println("There was an error, please try again.");
+            e.printStackTrace();
+            return;
+        }
+
+        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE title='%s';", user.getId(), Timestamp.from(date), title);
+        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", user.getBook().getId(), user.getUsername());
+
+        try {
+            //Then update the database
+            Statement statement = connection.createStatement();
+            statement.execute(queryBooks);
+            statement.execute(queryUsers);
+
+        } catch(Exception e) {
+            System.out.println("There was an error, please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    static private void idBorrow(User user, Connection connection, Scanner in) {
+        System.out.print("Enter id: ");
+        int id = 0;
+        try {
+            id = in.nextInt();
+
+        } catch(InputMismatchException e) {
+            System.out.println("Invalid input.");
+            //Clear input buffer as this will trigger when the user enters invalid input
+            in.nextLine();
+            return;
+        }
+
+        String query = String.format("SELECT * FROM books WHERE id=%d", id);
+
+        //Need to find date here so that it remains in scope longer
+        Instant date = Instant.now().plus(7, ChronoUnit.DAYS);
+
+        try {
+            Statement statement = connection.createStatement();
+
+            //Find title, etc of book
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+
+            Book book = new Book(
+                    id,
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getString("genre"),
+                    true,
+                    user.getId(),
+                    date
+            );
+
+            //Set user object to have borrowed this book
+            user.setBorrowedBook(book);
+
+        } catch(Exception e) {
+            System.out.println("There was an error, please try again.");
+            e.printStackTrace();
+            return;
+        }
+
+        String queryBooks = String.format("UPDATE books SET isBorrowed=1, borrowedBy=%d, returnDate='%s' WHERE id=%d;", user.getId(), Timestamp.from(date), id);
+        String queryUsers = String.format("UPDATE users SET book=%d WHERE username='%s';", id, user.getUsername());
+
+        try {
+            //Then update the database
+            Statement statement = connection.createStatement();
+            statement.execute(queryBooks);
+            statement.execute(queryUsers);
+
+        } catch(Exception e) {
+            System.out.println("There was an error, please try again.");
+            e.printStackTrace();
+        }
     }
 
     static private void returnMenu(User user, Connection connection, Scanner in) {
