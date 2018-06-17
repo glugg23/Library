@@ -9,26 +9,15 @@ import java.util.Scanner;
 
 class Menu {
     static void basicMenu(User user, Connection connection, Scanner in) {
-        boolean menuOpenedAgain = false;
-
-        System.out.println("Main Menu\n" +
-                            "\t1 - Loan a book\n" +
-                            "\t2 - Return a book\n" +
-                            "\t3 - Search for a book\n" +
-                            "\t0 - Exit and logout\n" +
-                            "Please enter your choice:\n");
-
         int choice;
 
         do {
-            if(menuOpenedAgain) {
-                System.out.println("Main Menu\n" +
-                            "\t1 - Loan a book\n" +
-                            "\t2 - Return a book\n" +
-                            "\t3 - Search for a book\n" +
-                            "\t0 - Exit and logout\n" +
-                            "Please enter your choice:\n");
-            }
+            System.out.println("Main Menu\n" +
+                    "\t1 - Loan a book\n" +
+                    "\t2 - Return a book\n" +
+                    "\t3 - Search for a book\n" +
+                    "\t0 - Exit and logout\n" +
+                    "Please enter your choice:\n");
 
             System.out.print(user.getUsername() + ": ");
             try {
@@ -42,15 +31,12 @@ class Menu {
             switch(choice) {
                 case 1:
                     loanMenu(user, connection, in);
-                    menuOpenedAgain = true;
                     break;
                 case 2:
                     returnMenu(user, connection, in);
-                    menuOpenedAgain = true;
                     break;
                 case 3:
                     System.out.println("Search Menu");
-                    menuOpenedAgain = true;
                     break;
                 case 0:
                     System.out.println("You have logged out.");
@@ -59,7 +45,6 @@ class Menu {
                     System.out.println("Invalid option.");
                     //Clear input buffer as this will trigger when the user enters invalid input
                     in.nextLine();
-                    menuOpenedAgain = true;
                     break;
             }
 
@@ -186,7 +171,7 @@ class Menu {
 
     static private void idBorrow(User user, Connection connection, Scanner in) {
         System.out.print("Enter id: ");
-        int id = 0;
+        int id;
         try {
             id = in.nextInt();
 
