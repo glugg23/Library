@@ -306,6 +306,7 @@ class Menu {
                     searchTitle(connection, in);
                     break;
                 case 2:
+                    searchAuthor(connection, in);
                     break;
                 case 3:
                     break;
@@ -332,6 +333,47 @@ class Menu {
         String title = in.nextLine();
 
         String query = "SELECT * FROM books WHERE title LIKE '%" + title + "%';";
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                if(rs.getBoolean("isBorrowed")) {
+                    Book book = new Book(rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getString("genre"),
+                            rs.getBoolean("isBorrowed"),
+                            rs.getInt("borrowedBy"),
+                            rs.getTimestamp("returnDate").toInstant());
+
+                    System.out.println(book.toString());
+
+                } else {
+                    Book book = new Book(rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("author"),
+                            rs.getString("genre"));
+
+                    System.out.println(book.toString());
+                }
+            }
+
+        } catch(Exception e) {
+            System.out.println("There was an error, please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    static private void searchAuthor(Connection connection, Scanner in) {
+        //Clear input buffer
+        in.nextLine();
+
+        System.out.print("Enter author: ");
+        String author = in.nextLine();
+
+        String query = "SELECT * FROM books WHERE author LIKE '%" + author + "%';";
 
         try {
             Statement statement = connection.createStatement();
