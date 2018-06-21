@@ -36,7 +36,7 @@ class Menu {
                     returnMenu(user, connection, in);
                     break;
                 case 3:
-                    System.out.println("Search Menu");
+                    searchMenu(user, connection, in);
                     break;
                 case 0:
                     System.out.println("You have logged out.");
@@ -279,5 +279,46 @@ class Menu {
         } else {
             System.out.println("You have not borrowed a book.\n");
         }
+    }
+
+    static private void searchMenu(User user, Connection connection, Scanner in) {
+        System.out.println("Search Menu\n" +
+                "\t1 - Search by title\n" +
+                "\t2 - Search by author\n" +
+                "\t3 - Search by genre\n" +
+                "\t4 - Show all books\n" +
+                "\t0 - Go back to main menu\n");
+
+        int choice;
+
+        do {
+            System.out.print(user.getUsername() + ": ");
+            try {
+                choice = in.nextInt();
+
+            } catch(InputMismatchException e) {
+                //If the user enters something wrong set choice to a still valid number
+                choice = -1;
+            }
+
+            switch(choice) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+                    //Clear input buffer as this will trigger when the user enters invalid input
+                    in.nextLine();
+                    break;
+            }
+
+        } while(choice != 0);
     }
 }
