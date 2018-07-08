@@ -273,6 +273,7 @@ class Menu {
                             e.printStackTrace();
                         }
 
+                        user.setBorrowedBook(null);
                         System.out.println("Success!");
                         return;
                     case 0:
