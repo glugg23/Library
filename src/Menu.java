@@ -19,6 +19,11 @@ class Menu {
                     "\t0 - Exit and logout\n" +
                     "Please enter your choice:\n");
 
+            //Check if loaned book is overdue
+            if(user.getBook() != null && user.getBook().getReturnDate().isBefore(Instant.now())) {
+                System.out.println("You have an overdue book: " + user.getBook().getTitle() + "\n");
+            }
+
             System.out.print(user.getUsername() + ": ");
             try {
                 choice = in.nextInt();
@@ -232,6 +237,11 @@ class Menu {
         System.out.println("Returns Menu");
         if(user.getBook() != null) {
             System.out.println("You have borrowed " + user.getBook().getTitle() + " by " + user.getBook().getAuthor());
+
+            if(user.getBook().getReturnDate().isBefore(Instant.now())) {
+                System.out.println("This book is overdue.");
+            }
+
             System.out.println("\t1 - Return this book\n" +
                                "\t0 - Go back to main menu\n");
 
